@@ -1,0 +1,15 @@
+---
+- name: Check if atom is installed
+  command: dpkg-query -W atom
+  register: atom_check_deb
+  failed_when: atom_check_deb.rc > 1
+  changed_when: atom_check_deb.rc == 1
+- name: Download atom 
+  get_url: 
+    url="{{ atom_url }}"
+    dest="/tmp/{{ atom_package_name }}.deb"
+  when: atom_check_deb.rc == 1 
+- name: Install my_package
+  apt: deb="/tmp/{{ atom_package_name }}.deb"
+  sudo: true
+  when: atom_check_deb.rc == 1
